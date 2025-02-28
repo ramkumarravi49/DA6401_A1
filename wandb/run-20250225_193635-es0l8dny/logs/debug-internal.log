@@ -1,0 +1,16 @@
+{"time":"2025-02-25T19:36:36.0113647+05:30","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"C:\\Users\\RAMKUMAR\\Desktop\\iitm\\sem2\\DL\\DA6401_A1\\wandb\\run-20250225_193635-es0l8dny\\logs\\debug-core.log"}
+{"time":"2025-02-25T19:36:38.3262567+05:30","level":"INFO","msg":"created new stream","id":"es0l8dny"}
+{"time":"2025-02-25T19:36:38.3262567+05:30","level":"INFO","msg":"stream: started","id":"es0l8dny"}
+{"time":"2025-02-25T19:36:38.3270077+05:30","level":"INFO","msg":"writer: Do: started","stream_id":"es0l8dny"}
+{"time":"2025-02-25T19:36:38.3273402+05:30","level":"INFO","msg":"handler: started","stream_id":"es0l8dny"}
+{"time":"2025-02-25T19:36:38.3273402+05:30","level":"INFO","msg":"sender: started","stream_id":"es0l8dny"}
+{"time":"2025-02-25T19:36:39.1063552+05:30","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-02-25T19:36:39.189885+05:30","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-02-25T19:36:39.1960659+05:30","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-02-25T19:36:40.2010777+05:30","level":"INFO","msg":"handler: operation stats","stats":{"operations":[{"desc":"uploading history steps 0-0, summary","runtime_seconds":0.320089}],"total_operations":1}}
+{"time":"2025-02-25T19:36:40.8956325+05:30","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-02-25T19:36:42.286989+05:30","level":"INFO","msg":"stream: closing","id":"es0l8dny"}
+{"time":"2025-02-25T19:36:42.286989+05:30","level":"INFO","msg":"handler: closed","stream_id":"es0l8dny"}
+{"time":"2025-02-25T19:36:42.286989+05:30","level":"INFO","msg":"writer: Close: closed","stream_id":"es0l8dny"}
+{"time":"2025-02-25T19:36:42.286989+05:30","level":"INFO","msg":"sender: closed","stream_id":"es0l8dny"}
+{"time":"2025-02-25T19:36:42.286989+05:30","level":"INFO","msg":"stream: closed","id":"es0l8dny"}

@@ -1,0 +1,16 @@
+{
+  "os":  "Windows-11-10.0.26100-SP0",
+  "python":  "CPython 3.12.4",
+  "startedAt":  "2025-02-25T14:06:36.007546Z",
+  "program":  "c:\\Users\\RAMKUMAR\\Desktop\\iitm\\sem2\\DL\\DA6401_A1\\test.py",
+  "codePath":  "test.py",
+  "git":  {
+    "remote":  "https://github.com/ramkumarravi49/DA6401_A1.git",
+    "commit":  "21ea7ad9295821a26f0595688d24afb23f01678e"
+  },
+  "email":  "cs24m037@smail.iitm.ac.in",
+  "root":  "C:\\Users\\RAMKUMAR\\Desktop\\iitm\\sem2\\DL\\DA6401_A1",
+  "host":  "LAPTOP-57Q52D7N",
+  "executable":  "C:\\Users\\RAMKUMAR\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+  "codePathLocal":  "test.py"
+}
