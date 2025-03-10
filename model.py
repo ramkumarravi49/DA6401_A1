@@ -59,18 +59,14 @@ def Back_Propogation(y_hat, y, layer_op, pre_activation, parameters, activation_
                 activation_deriv = Relu.derivative
             elif activation_f == 'tanh':
                 activation_deriv = Tanh.derivative
-            else:
-                raise ValueError("Unsupported activation function")
             gradients[f"dZ{l-1}"] = np.dot(parameters[f"W{l}"].T, gradients[f"dZ{l}"]) * activation_deriv(pre_activation[l-1])
     return gradients
 
-def compute_multiclass_loss(Y, Y_hat, batch_size, loss, lamb, parameters):
+def Loss_Fn(Y, Y_hat, batch_size, loss, lamb, parameters):
     if loss == 'categorical_crossentropy':
         cost = -np.sum(Y * np.log(Y_hat + 1e-8)) / batch_size
     elif loss == 'mse':
         cost = np.sum((Y - Y_hat)**2) / (2 * batch_size)
-    else:
-        raise ValueError("Unsupported loss function")
     
     reg_sum = 0
     L = len(parameters) // 2
