@@ -6,8 +6,10 @@ import seaborn as sns
 import wandb
 
 # Class labels for Fashion MNIST dataset
-class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+# class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+#                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+
+class_names = [0,1,2,3,4,5,6,7,8,9]
 
 def one_hot_encode(y, num_classes):
     """Convert labels to one-hot encoding."""

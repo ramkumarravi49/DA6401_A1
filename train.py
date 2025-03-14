@@ -1,29 +1,23 @@
 import numpy as np
 import wandb
-from tensorflow.keras.datasets import fashion_mnist
+import argparse
+from tensorflow.keras.datasets import fashion_mnist, mnist
 from sklearn.model_selection import train_test_split
-from helper import class_names, one_hot_encode
+from helper import class_names, one_hot_encode, update_parameters, log_epoch_metrics, log_confusion_matrix
 from model import (Init_Parameters, Forward_Propogation, Back_Propogation, 
                    NN_predict, Loss_Fn, NN_evaluate)
-from helper import update_parameters
-from helper import log_epoch_metrics
-from helper import log_confusion_matrix
 from sklearn.metrics import accuracy_score, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-# Initialize wandb for logging
-#wandb.init(project="DL_A1", entity="cs24m037-iit-madras", name="A1_Q7")
 
 ##############################################
 # Utility Functions
 ##############################################
 
 def Train_minibatch(X_batch, Y_batch, parameters, prev_updates, batch_size, 
-                      A_function, loss, L2_lamb, optimizer, t, beta, l_r):
+                      A_function, loss, L2_lamb, optimizer, t, beta, l_r, args):
     """
-    Process a single mini-batch: forward propagation, compute gradients, and update parameters.
-    For optimizers using lookahead (nesterov/nadam), compute lookahead parameters.
+    Process a single mini-batch: 
     """
     # Use lookahead for Nesterov/Nadam optimizers
     if optimizer in ['nesterov', 'nadam']:
@@ -44,21 +38,21 @@ def Train_minibatch(X_batch, Y_batch, parameters, prev_updates, batch_size,
             parameters, prev_updates = update_parameters("nesterov", parameters, gradients, prev_updates, lr=l_r, beta1=beta)
         elif optimizer == "nadam":
             parameters, prev_updates = update_parameters("nadam", parameters, gradients, prev_updates, t, 
-                                                          lr=l_r, beta1=0.9, beta2=0.999, epsilon=1e-8)
+                                                          lr=l_r, beta1=args.beta1, beta2=args.beta2, epsilon=args.epsilon)
             t += 1
     else:
         output, layer_op, pre_act = Forward_Propogation(X_batch, parameters, A_function)
         gradients = Back_Propogation(output, Y_batch, layer_op, pre_act, 
                                      parameters, A_function, batch_size, loss, L2_lamb)
         parameters, prev_updates = update_parameters(optimizer, parameters, gradients, prev_updates, t, 
-                                                       lr=l_r, beta1=0.9, beta2=0.999, epsilon=1e-8)
+                                                       lr=l_r, beta1=args.beta1, beta2=args.beta2, epsilon=args.epsilon)
         if optimizer == "adam":
             t += 1
 
     return parameters, prev_updates, t
 
 def Run_epoch(X_train, y_train_one_hot, parameters, prev_updates, batch_size, 
-                  A_function, loss, L2_lamb, optimizer, t, beta, l_r):
+              A_function, loss, L2_lamb, optimizer, t, beta, l_r, args):
     """
     Process an entire epoch by looping through all mini-batches.
     """
@@ -67,53 +61,52 @@ def Run_epoch(X_train, y_train_one_hot, parameters, prev_updates, batch_size,
         current_batch_size = batch_size if i + batch_size <= M else M - i
         X_batch = X_train[:, i:i+current_batch_size]
         Y_batch = y_train_one_hot[:, i:i+current_batch_size]
-        parameters, prev_updates, t = Train_minibatch ( X_batch, Y_batch, parameters, prev_updates, current_batch_size, 
-                                                        A_function, loss, L2_lamb, optimizer, t, beta, l_r )
+        parameters, prev_updates, t = Train_minibatch(X_batch, Y_batch, parameters, prev_updates,
+                                                      current_batch_size, A_function, loss, L2_lamb,
+                                                      optimizer, t, beta, l_r, args)
     return parameters, prev_updates, t
-
-
 
 ##############################################
 # Main Training Function
 ##############################################
 
-def NN_Train():
+def NN_Train(args):
     """
-    Trains the neural network using modularized mini-batch and epoch processing.
+    Trains the neural network using hyperparameters provided via args.
     """
-    # Define hyperparameters (customize as needed)
+    # Set hyperparameters from parsed arguments (defaults match hardcoded values)
     params_config = {
-        'epochs': 5,
-        'batch_size': 64,
-        'l_r': 0.0005,
-        'A_function': 'relu',
-        'optimizer': 'rmsprop',  # Options: "sgd", "momentum", "nesterov", "rmsprop", "adam", "nadam"
-        'Wt_init': 'xavier',   # Options: "xavier", "random_normal", "random_uniform"
-        'L2_lamb': 0,
-        'num_neurons': 256,
-        'num_hidden': 3,
-        'loss_function': 'categorical_crossentropy'
+        'epochs': args.epochs,                    # originally 5
+        'batch_size': args.batch_size,            # originally 32
+        'l_r': args.learning_rate,                # originally 0.0005
+        'A_function': args.activation,            # originally 'relu'
+        'optimizer': args.optimizer,              # originally 'rmsprop'
+        'Wt_init': args.weight_init,              # originally 'xavier'
+        'L2_lamb': args.l2_lamb,                  # originally 0.0005
+        'num_neurons': args.hidden_size,          # originally 256
+        'num_hidden': args.num_layers,            # originally 3
+        'loss_function': args.loss                # originally 'categorical_crossentropy'
     }
     
     epochs        = params_config['epochs']
     batch_size    = params_config['batch_size']
-    l_r = params_config['l_r']
-    A_function  = params_config['A_function']
+    l_r           = params_config['l_r']
+    A_function    = params_config['A_function']
     optimizer     = params_config['optimizer']
-    Wt_init     = params_config['Wt_init']
+    Wt_init       = params_config['Wt_init']
     L2_lamb       = params_config['L2_lamb']
     num_neurons   = params_config['num_neurons']
     num_hidden    = params_config['num_hidden']
     loss          = params_config['loss_function']
-    beta          = 0.9  # Momentum parameter for lookahead optimizers
-    
-    run_name = "lr_{}_ac_{}_in_{}_op_{}_bs_{}_L2_{}_ep_{}_nn_{}_nh_{}".format(l_r, A_function, Wt_init, optimizer, batch_size, L2_lamb, epochs, num_neurons, num_hidden)
-    print(run_name)
+    beta          = args.momentum  # momentum parameter for lookahead optimizers
+
+    run_name = "lr_{}_ac_{}_in_{}_op_{}_bs_{}_L2_{}_ep_{}_nn_{}_nh_{}".format(
+                    l_r, A_function, Wt_init, optimizer, batch_size, L2_lamb, epochs, num_neurons, num_hidden)
+    print("Run Name:", run_name)
     
     # Access global preprocessed data
     global X_train, X_val, y_train, y_val, y_train_one_hot, y_val_one_hot, num_features, num_classes
     M = X_train.shape[1]
-    Mval = X_val.shape[1]
     
     # Define network architecture: input layer, hidden layers, output layer
     layer_dims = [num_features] + [num_neurons] * num_hidden + [num_classes]
@@ -121,12 +114,11 @@ def NN_Train():
     
     t = 1  # Timestep for Adam/Nadam
     epoch_costs = []
-    val_costs   = []
     
     # Main training loop
     for epoch in range(1, epochs + 1):
-        parameters, prev_updates, t = Run_epoch( X_train, y_train_one_hot, parameters, prev_updates,
-                                                batch_size, A_function, loss, L2_lamb, optimizer, t, beta, l_r)
+        parameters, prev_updates, t = Run_epoch(X_train, y_train_one_hot, parameters, prev_updates,
+                                                batch_size, A_function, loss, L2_lamb, optimizer, t, beta, l_r, args)
         
         # Compute full training cost
         train_output, _, _ = Forward_Propogation(X_train, parameters, A_function)
@@ -136,7 +128,6 @@ def NN_Train():
         # Compute validation cost
         val_output, _, _ = Forward_Propogation(X_val, parameters, A_function)
         val_loss = Loss_Fn(y_val_one_hot, val_output, X_val.shape[1], loss, L2_lamb, parameters)
-        val_costs.append(val_loss)
         
         # Compute accuracies
         train_preds = NN_predict(X_train, parameters, A_function)
@@ -144,25 +135,73 @@ def NN_Train():
         train_acc = accuracy_score(y_train, train_preds)
         val_acc = accuracy_score(y_val, val_preds)
         
-        #log_epoch_metrics(epoch, train_loss, val_loss, train_acc, val_acc)
+        log_epoch_metrics(epoch, train_loss, val_loss, train_acc, val_acc)
         print(f"Epoch {epoch}: Training Loss = {train_loss:.4f}, Validation Loss = {val_loss:.4f}, "
               f"Training Acc = {train_acc:.4f}, Validation Acc = {val_acc:.4f}")
     
     return parameters, epoch_costs, A_function
 
 ##############################################
-# Main Execution
+# Main Execution with Argument Parsing
 ##############################################
 
 if __name__ == '__main__':
-    # Load dataset
-    (X, y), (X_test, y_test) = fashion_mnist.load_data()
+    parser = argparse.ArgumentParser(description="Train a neural network on MNIST or Fashion MNIST dataset.")
     
-    # (Optional) Log raw sample images to wandb
-    example_indices = [np.where(y == i)[0][0] for i in range(len(class_names))]
-    example_images = [X[idx] for idx in example_indices]
-    example_captions = [class_names[y[idx]] for idx in example_indices]
-    # wandb.log({"Raw Sample Images": [wandb.Image(img, caption=cap) for img, cap in zip(example_images, example_captions)]})
+    parser.add_argument('-wp', '--wandb_project', type=str, default="DL_A1",
+                        help='Project name used to track experiments in Weights & Biases dashboard')
+    parser.add_argument('-we', '--wandb_entity', type=str, default="cs24m037-iit-madras",
+                        help='Wandb entity used to track experiments in Weights & Biases dashboard')
+    parser.add_argument('-d', '--dataset', type=str, default="fashion_mnist", choices=["mnist", "fashion_mnist"],
+                        help='Dataset to use')
+    parser.add_argument('-e', '--epochs', type=int, default=5,
+                        help='Number of epochs to train neural network')
+    parser.add_argument('-b', '--batch_size', type=int, default=32,
+                        help='Batch size used to train neural network')
+    parser.add_argument('-l', '--loss', type=str, default="categorical_crossentropy",
+                        choices=["categorical_crossentropy", "mse"],
+                        help='Loss function to use')
+    parser.add_argument('-o', '--optimizer', type=str, default="rmsprop",
+                        choices=["sgd", "momentum", "nesterov", "rmsprop", "adam", "nadam"],
+                        help='Optimizer to use')
+    parser.add_argument('-lr', '--learning_rate', type=float, default=0.0005,
+                        help='Learning rate used to optimize model parameters')
+    parser.add_argument('-m', '--momentum', type=float, default=0.9,
+                        help='Momentum used by momentum and Nesterov optimizers')
+    parser.add_argument('-beta', '--beta', type=float, default=0.999,
+                        help='Beta used by RMSprop optimizer')
+    parser.add_argument('-beta1', '--beta1', type=float, default=0.9,
+                        help='Beta1 used by Adam and Nadam optimizers')
+    parser.add_argument('-beta2', '--beta2', type=float, default=0.999,
+                        help='Beta2 used by Adam and Nadam optimizers')
+    parser.add_argument('-eps', '--epsilon', type=float, default=1e-8,
+                        help='Epsilon used by optimizers')
+    parser.add_argument('-w_d', '--weight_decay', type=float, default=0.0,
+                        help='Weight decay used by optimizers')
+    parser.add_argument('-w_i', '--weight_init', type=str, default="xavier",
+                        choices=["xavier", "random_normal", "random_uniform"],
+                        help='Weight initialization method')
+    parser.add_argument('-nhl', '--num_layers', type=int, default=3,
+                        help='Number of hidden layers used in feedforward neural network')
+    parser.add_argument('-sz', '--hidden_size', type=int, default=256,
+                        help='Number of hidden neurons in a feedforward layer')
+    parser.add_argument('-a', '--activation', type=str, default="relu",
+                        choices=["identity", "sigmoid", "tanh", "relu"],
+                        help='Activation function')
+    # Additional parameter used in training (L2 regularization lambda)
+    parser.add_argument('--l2_lamb', type=float, default=0.0005,
+                        help='L2 regularization lambda')
+    
+    args = parser.parse_args()
+    
+    # Initialize wandb with command-line parameters
+    wandb.init(project=args.wandb_project, entity=args.wandb_entity)
+    
+    # Load dataset based on args.dataset
+    if args.dataset == "fashion_mnist":
+        (X, y), (X_test, y_test) = fashion_mnist.load_data()
+    else:
+        (X, y), (X_test, y_test) = mnist.load_data()
     
     # Reshape and normalize data
     X = X.reshape(X.shape[0], -1) / 255.0
@@ -188,13 +227,21 @@ if __name__ == '__main__':
     # Transpose data so that each column is a sample
     X_train, X_val, X_test = X_train.T, X_val.T, X_test.T
 
-    # Train the model using the modularized training loop
-    parameters, epoch_costs, A_function = NN_Train()
+    # Set globals so NN_Train can access preprocessed data
+    globals().update({
+        "X_train": X_train, "X_val": X_val,
+        "y_train": y_train, "y_val": y_val,
+        "y_train_one_hot": y_train_one_hot, "y_val_one_hot": y_val_one_hot,
+        "num_features": num_features, "num_classes": num_classes
+    })
     
-    # Evaluate the model on test data (NN_evaluate prints accuracy and classification report)
+    # Train the model using the training function that now accepts command-line arguments
+    parameters, epoch_costs, A_function = NN_Train(args)
+    
+    # Evaluate the model on test data
     print("\nEvaluating on test data:")
     train_pred, test_pred = NN_evaluate(X_train, y_train, X_test, y_test, parameters, A_function)
     
-    # Log confusion matrices using the custom utility function
-    #log_confusion_matrix(y_train, train_pred, "Train Confusion Matrix", class_names)
-    #log_confusion_matrix(y_test, test_pred, "Test Confusion Matrix", class_names)
+    # Optionally, log confusion matrices
+    # log_confusion_matrix(y_train, train_pred, "Train Confusion Matrix", class_names)
+    # log_confusion_matrix(y_test, test_pred, "Test Confusion Matrix", class_names)
