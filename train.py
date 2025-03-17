@@ -156,7 +156,7 @@ if __name__ == '__main__':
                         help='Dataset to use')
     parser.add_argument('-e', '--epochs', type=int, default=5,
                         help='Number of epochs to train neural network')
-    parser.add_argument('-b', '--batch_size', type=int, default=32,
+    parser.add_argument('-b', '--batch_size', type=int, default=64,
                         help='Batch size used to train neural network')
     parser.add_argument('-l', '--loss', type=str, default="categorical_crossentropy",
                         choices=["categorical_crossentropy", "mse"],
@@ -176,8 +176,8 @@ if __name__ == '__main__':
                         help='Beta2 used by Adam and Nadam optimizers')
     parser.add_argument('-eps', '--epsilon', type=float, default=1e-8,
                         help='Epsilon used by optimizers')
-    parser.add_argument('-w_d', '--weight_decay', type=float, default=0.0,
-                        help='Weight decay used by optimizers')
+    # parser.add_argument('-w_d', '--weight_decay', type=float, default=0.0,
+    #                     help='Weight decay used by optimizers')
     parser.add_argument('-w_i', '--weight_init', type=str, default="xavier",
                         choices=["xavier", "random_normal", "random_uniform"],
                         help='Weight initialization method')
@@ -189,7 +189,7 @@ if __name__ == '__main__':
                         choices=["identity", "sigmoid", "tanh", "relu"],
                         help='Activation function')
     # Additional parameter used in training (L2 regularization lambda)
-    parser.add_argument('--l2_lamb', type=float, default=0.0005,
+    parser.add_argument('--l2_lamb', type=float, default=0,
                         help='L2 regularization lambda')
     
     args = parser.parse_args()
