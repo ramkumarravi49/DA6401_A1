@@ -89,3 +89,6 @@ To train the model using the default hyperparameters and log experiments to wand
 
 ```bash
 python train.py --wandb_entity cs24m037-iit-madras --wandb_project DL_A1
+```
+
+Note that you have to give in your own entity name and project name , the above command is just a example
