@@ -8,9 +8,7 @@ def Init_Parameters(layer_dims, init_mode="xavier"):
     parameters = {}
     prev_updates = {}
     for i in range(1, len(layer_dims)):
-        if init_mode == 'random_normal':
-            parameters[f"W{i}"] = np.random.randn(layer_dims[i], layer_dims[i-1]) * 0.01
-        elif init_mode == 'random_uniform':
+        if init_mode == 'random_uniform':
             parameters[f"W{i}"] = np.random.rand(layer_dims[i], layer_dims[i-1]) * 0.01
         elif init_mode == 'xavier':
             parameters[f"W{i}"] = np.random.randn(layer_dims[i], layer_dims[i-1]) * np.sqrt(2 / (layer_dims[i] + layer_dims[i-1]))
