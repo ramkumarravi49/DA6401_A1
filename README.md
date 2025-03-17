@@ -19,6 +19,9 @@ DA6401_Assignment1/
 
 This repository contains a custom neural network implementation built from scratch using NumPy. It includes all code used for training, evaluating, and experimenting with different optimizers, activation functions, and network architectures. All experiments are tracked using Weights & Biases (wandb).
 
+### Link to Assignmnet Report
+ - https://wandb.ai/cs24m037-iit-madras/DL_A1/reports/DA6401-Assignment-1--VmlldzoxMTY4NzU2OQ
+
 ## Requirements
 
 - Python 3.7 or later
