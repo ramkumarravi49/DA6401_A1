@@ -6,7 +6,7 @@ This repository contains a custom neural network implementation built from scrat
 
 ### Link to Assignmnet Report
  - https://wandb.ai/cs24m037-iit-madras/DL_A1/reports/DA6401-Assignment-1--VmlldzoxMTY4NzU2OQ
- - 
+ - https://github.com/ramkumarravi49/DA6401_A1
 ## Project Structure
 ```bash
 DA6401_Assignment1/
