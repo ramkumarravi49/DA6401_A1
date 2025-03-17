@@ -8,7 +8,9 @@ def Init_Parameters(layer_dims, init_mode="xavier"):
     parameters = {}
     prev_updates = {}
     for i in range(1, len(layer_dims)):
-        if init_mode == 'random_uniform':
+        if init_mode == 'random_normal':
+            parameters[f"W{i}"] = np.random.randn(layer_dims[i], layer_dims[i-1]) * 0.01
+        elif init_mode == 'random_uniform':
             parameters[f"W{i}"] = np.random.rand(layer_dims[i], layer_dims[i-1]) * 0.01
         elif init_mode == 'xavier':
             parameters[f"W{i}"] = np.random.randn(layer_dims[i], layer_dims[i-1]) * np.sqrt(2 / (layer_dims[i] + layer_dims[i-1]))
@@ -35,8 +37,6 @@ def Forward_Propogation(X, parameters, activation_f):
                 layer_op[l] = Relu.function(pre_activation[l])
             elif activation_f == 'tanh':
                 layer_op[l] = Tanh.function(pre_activation[l])
-            else:
-                raise ValueError("Unsupported activation function")
     return layer_op[-1], layer_op, pre_activation
 
 def Back_Propogation(y_hat, y, layer_op, pre_activation, parameters, activation_f, batch_size, loss, lamb):
@@ -73,15 +73,7 @@ def Loss_Fn(Y, Y_hat, batch_size, loss, lamb, parameters):
     cost += (lamb / (2 * batch_size)) * reg_sum
     return cost
 
-def plot_cost_curve(train_costs, val_costs):
-    plt.plot(range(len(train_costs)), train_costs, 'r', label="Training loss")
-    plt.plot(range(len(val_costs)), val_costs, 'lime', label="Validation loss")
-    plt.title("Training and Validation Loss vs Number of Epochs", size=14)
-    plt.xlabel("Epochs", size=14)
-    plt.ylabel("Loss", size=14)
-    plt.grid()
-    plt.legend()
-    plt.show()
+
 
 def NN_predict(X, parameters, activation_f):
     output, _, _ = Forward_Propogation(X, parameters, activation_f)

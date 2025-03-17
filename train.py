@@ -72,32 +72,32 @@ def Run_epoch(X_train, y_train_one_hot, parameters, prev_updates, batch_size,
 
 def NN_Train(args):
     """
-    Trains the neural network using hyperparameters provided via args.
-    """
-    # Set hyperparameters from parsed arguments (defaults match hardcoded values)
-    params_config = {
-        'epochs': args.epochs,                    # originally 5
-        'batch_size': args.batch_size,            # originally 32
-        'l_r': args.learning_rate,                # originally 0.0005
-        'A_function': args.activation,            # originally 'relu'
-        'optimizer': args.optimizer,              # originally 'rmsprop'
-        'Wt_init': args.weight_init,              # originally 'xavier'
-        'L2_lamb': args.l2_lamb,                  # originally 0.0005
-        'num_neurons': args.hidden_size,          # originally 256
-        'num_hidden': args.num_layers,            # originally 3
-        'loss_function': args.loss                # originally 'categorical_crossentropy'
-    }
+    # Trains the neural network using hyperparameters provided via args.
+    # """
+    # # Set hyperparameters from parsed arguments (defaults match hardcoded values)
+    # params_config = {
+    #     'epochs': args.epochs,                    
+    #     'batch_size': args.batch_size,            
+    #     'l_r': args.learning_rate,                
+    #     'A_function': args.activation,            
+    #     'optimizer': args.optimizer,              
+    #     'Wt_init': args.weight_init,              
+    #     'L2_lamb': args.l2_lamb,                  
+    #     'num_neurons': args.hidden_size,          
+    #     'num_hidden': args.num_layers,            
+    #     'loss_function': args.loss                
+    # }
     
-    epochs        = params_config['epochs']
-    batch_size    = params_config['batch_size']
-    l_r           = params_config['l_r']
-    A_function    = params_config['A_function']
-    optimizer     = params_config['optimizer']
-    Wt_init       = params_config['Wt_init']
-    L2_lamb       = params_config['L2_lamb']
-    num_neurons   = params_config['num_neurons']
-    num_hidden    = params_config['num_hidden']
-    loss          = params_config['loss_function']
+    epochs        = args.epochs
+    batch_size    = args.batch_size
+    l_r           = args.learning_rate
+    A_function    = args.activation
+    optimizer     = args.optimizer
+    Wt_init       = args.weight_init
+    L2_lamb       = args.l2_lamb
+    num_neurons   = args.hidden_size
+    num_hidden    = args.num_layers
+    loss          = args.loss
     beta          = args.momentum  # momentum parameter for lookahead optimizers
 
     run_name = "lr_{}_ac_{}_in_{}_op_{}_bs_{}_L2_{}_ep_{}_nn_{}_nh_{}".format(
@@ -108,7 +108,7 @@ def NN_Train(args):
     global X_train, X_val, y_train, y_val, y_train_one_hot, y_val_one_hot, num_features, num_classes
     M = X_train.shape[1]
     
-    # Define network architecture: input layer, hidden layers, output layer
+    
     layer_dims = [num_features] + [num_neurons] * num_hidden + [num_classes]
     parameters, prev_updates = Init_Parameters(layer_dims, Wt_init)
     
@@ -194,7 +194,6 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     
-    # Initialize wandb with command-line parameters
     wandb.init(project=args.wandb_project, entity=args.wandb_entity)
     
     # Load dataset based on args.dataset
@@ -216,7 +215,7 @@ if __name__ == '__main__':
     Mtest = X_test.shape[0]
     num_classes = len(np.unique(y_train))
     
-    # One-hot encode labels for training, validation, and test sets
+    # One-hot encode labels 
     y_train_one_hot = np.zeros((num_classes, M))
     y_train_one_hot[y_train, np.arange(M)] = 1
     y_val_one_hot = np.zeros((num_classes, Mval))
@@ -224,10 +223,10 @@ if __name__ == '__main__':
     y_test_one_hot = np.zeros((num_classes, Mtest))
     y_test_one_hot[y_test, np.arange(Mtest)] = 1
     
-    # Transpose data so that each column is a sample
+    # Transpose data 
     X_train, X_val, X_test = X_train.T, X_val.T, X_test.T
 
-    # Set globals so NN_Train can access preprocessed data
+    
     globals().update({
         "X_train": X_train, "X_val": X_val,
         "y_train": y_train, "y_val": y_val,
@@ -235,10 +234,10 @@ if __name__ == '__main__':
         "num_features": num_features, "num_classes": num_classes
     })
     
-    # Train the model using the training function that now accepts command-line arguments
+    
     parameters, epoch_costs, A_function = NN_Train(args)
     
-    # Evaluate the model on test data
+    # Evaluate the model 
     print("\nEvaluating on test data:")
     train_pred, test_pred = NN_evaluate(X_train, y_train, X_test, y_test, parameters, A_function)
     
