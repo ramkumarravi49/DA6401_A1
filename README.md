@@ -77,11 +77,10 @@ The training script (`train.py`) accepts several command-line arguments as instr
 | **-beta1, --beta1**       | 0.9                        | Beta1 used by Adam and Nadam optimizers                                          |
 | **-beta2, --beta2**       | 0.999                      | Beta2 used by Adam and Nadam optimizers                                          |
 | **-eps, --epsilon**       | 1e-8                       | Epsilon used by optimizers                                                       |
-| **-w_d, --weight_decay**  | 0.0                        | Weight decay used by optimizers                                                  |
-| **-w_i, --weight_init**   | xavier                     | Weight initialization method. Choices: ["xavier", "random_normal", "random_uniform"]|
+| **-w_i, --weight_init**   | xavier                     | Weight initialization method. Choices: ["xavier", "random_uniform"]|
 | **-nhl, --num_layers**    | 3                          | Number of hidden layers in the feedforward neural network                        |
 | **-sz, --hidden_size**    | 256                        | Number of neurons in each hidden layer                                           |
-| **-a, --activation**      | relu                       | Activation function. Choices: ["identity", "sigmoid", "tanh", "relu"]            |
+| **-a, --activation**      | relu                       | Activation function. Choices: ["sigmoid", "tanh", "relu"]            |
 | **--l2_lamb**             | 0.0005                     | L2 regularization lambda                                                         |
 
 ### Example Training Command
