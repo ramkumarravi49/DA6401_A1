@@ -1,7 +1,17 @@
 # DA6401_A1
 
 ## Project Structure
-
+```bash
+DA6401_Assignment1/
+├── A1_old/              # code before adding argparse 
+├── helper.py            # Activation,Optimizer and helper fn
+├── model.py             # Forward Pass , Backward Pass, Loss Fn
+├── train.py             # Training script(main entry point)
+├── A1_Q1.ipynb          # To run sweeps
+├── A1_Q1_MSE.ipynb      # To run sweeps
+├── q1.py                # the first file created , just don't wanna delete it ! :)
+|── README.md            # Setup and usage instructions
+```
 
 
 
@@ -13,13 +23,14 @@ This repository contains a custom neural network implementation built from scrat
 
 - Python 3.7 or later
 - [NumPy](https://numpy.org/)
-- [scikit-learn](https://scikit-learn.org/)
 - [matplotlib](https://matplotlib.org/)
 - [seaborn](https://seaborn.pydata.org/)
 - [Weights & Biases (wandb)](https://wandb.ai/)
 - [TensorFlow](https://www.tensorflow.org/) (for dataset loading via `tensorflow.keras.datasets`)
 
-
+```bash
+pip install numpy wandb keras tensorflow pandas seaborn
+```
 
 ## Training the Model
 
@@ -55,11 +66,3 @@ To train the model using the default hyperparameters and log experiments to wand
 
 ```bash
 python train.py --wandb_entity cs24m037-iit-madras --wandb_project DL_A1
-
-
-### Example Training Command
-
-To train the model using the default hyperparameters and log experiments to wandb, run:
-
-```bash
-python train.py --wandb_entity myname --wandb_project myprojectname
