@@ -1,5 +1,12 @@
 # DA6401_A1
 
+## Overview
+
+This repository contains a custom neural network implementation built from scratch using NumPy. It includes all code used for training, evaluating, and experimenting with different optimizers, activation functions, and network architectures. All experiments are tracked using Weights & Biases (wandb).
+
+### Link to Assignmnet Report
+ - https://wandb.ai/cs24m037-iit-madras/DL_A1/reports/DA6401-Assignment-1--VmlldzoxMTY4NzU2OQ
+ - 
 ## Project Structure
 ```bash
 DA6401_Assignment1/
@@ -13,14 +20,28 @@ DA6401_Assignment1/
 |── README.md            # Setup and usage instructions
 ```
 
+## Dataset
+The Fashion-MNIST dataset consists of 70,000 grayscale images of 28x28 pixels, divided into 10 classes representing various fashion items (e.g., T-shirts, trousers, etc.). The dataset is split into training and testing set.
+
+## File Summaries
+
+- **helper.py**  
+  - Implements utility functions such as one-hot encoding and a collection of activation functions (Sigmoid, ReLU, Tanh, Softmax) with their derivatives.
+  - Contains various optimizer implementations (SGD, Momentum, Nesterov, RMSprop, Adam/Nadam) for updating network parameters.
+  - Provides logging utilities integrated with Weights & Biases (wandb) for tracking training metrics and generating visualizations.
+
+- **model.py**  
+  - Initializes network parameters using different methods (e.g., Xavier initialization).
+  - Implements forward propagation, applying activation functions through the network layers, and uses Softmax for the output layer.
+  - Handles backward propagation to compute gradients, calculates the loss (categorical crossentropy or MSE with L2 regularization), and provides functions for making predictions and evaluating model performance.
+
+- **train.py**  
+  - Loads and preprocesses the dataset (either Fashion MNIST or MNIST), including reshaping, normalizing, and splitting the data into training, validation, and test sets.
+  - Contains functions for managing mini-batch training and running the overall training loop over multiple epochs.
+  - Parses command-line arguments to customize hyperparameters, trains the model, and finally evaluates it on the test data while logging metrics.
 
 
-## Overview
 
-This repository contains a custom neural network implementation built from scratch using NumPy. It includes all code used for training, evaluating, and experimenting with different optimizers, activation functions, and network architectures. All experiments are tracked using Weights & Biases (wandb).
-
-### Link to Assignmnet Report
- - https://wandb.ai/cs24m037-iit-madras/DL_A1/reports/DA6401-Assignment-1--VmlldzoxMTY4NzU2OQ
 
 ## Requirements
 
@@ -37,7 +58,7 @@ pip install numpy wandb keras tensorflow pandas seaborn
 
 ## Training the Model
 
-The training script (`train.py`) accepts several command-line arguments to allow flexibility in experiments. The following table lists all supported arguments, their default values (as set in the code), and descriptions.
+The training script (`train.py`) accepts several command-line arguments as instructed in "** Code Spesifications**" section. The following table lists all supported arguments, their default values (as set in the code) are the best parameters obtained in the sweeps.
 
 ### Command-line Arguments
 
